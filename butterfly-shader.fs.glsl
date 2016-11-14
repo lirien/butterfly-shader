@@ -13,24 +13,26 @@ uniform float     iSampleRate;           // sound sample rate (i.e., 44100)
 #define pi 3.141593
 #define e 2.71828
 
+float shape_butterfly(vec2 p) {
+  float angle = atan(p.y, p.x);
+  float shape = pow(e, sin(angle)) - 2.0 * cos(4.0 * angle);
+  return shape;
+}
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-  vec2 p = (2.0 * fragCoord - iResolution.xy) / min(iResolution.y, iResolution.x);
+  vec2 p = (2.0 * fragCoord - iResolution.xy) / min(iResolution.y,iResolution.x);
   p = p * 3.0;
   p.y += 0.75;
 
-  // background
-  vec3 bcol = vec3(0.0, 0.0, 0.0);
+  vec3 bg_color = vec3(0.0, 0.0, 0.0);
 
-  // shape
-  float a = atan(p.y, p.x);
-  float r = length(p);
-  float wings = sin(2.0 * a - pi) / 24.0;
-  float d = pow(e, sin(a)) - 2.0 * cos(4.0 * a) + pow(wings, 5.0);
+  float radius = length(p);
+  float shape = shape_butterfly(p);
 
-  // color
-  vec3 hcol = vec3(1.0, 1.0, 1.0);
-  vec3 col = mix(bcol, hcol, smoothstep(-0.01, 0.01, d - r));
+  vec2 uv = fragCoord.xy / iResolution.xy;
+  vec3 shape_color = vec3(uv, 0.5 + 0.5 * sin(iGlobalTime));
+  vec3 color = mix(bg_color, shape_color, smoothstep(-0.01, 0.01, shape - radius));
 
-  fragColor = vec4(col, 1.0);
+  fragColor = vec4(color, 1.0);
 }
