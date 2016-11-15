@@ -13,10 +13,24 @@ uniform float     iSampleRate;           // sound sample rate (i.e., 44100)
 #define pi 3.141593
 #define e 2.71828
 
+// from hughsk "2D SDF Toy" https://www.shadertoy.com/view/XsyGRW
+float draw_solid(float d) {
+  return smoothstep(0.0, 3.0 / iResolution.y, max(0.0, d));
+}
+
+vec3 draw_distance(float d, vec2 p) {
+  float t = clamp(d * 0.85, 0.0, 1.0);
+  vec3 grad = mix(vec3(1, 0.8, 0.5), vec3(0.3, 0.8, 1), t);
+  grad -= mix(vec3(0.05, 0.35, 0.35), vec3(0.0), draw_solid(d));
+
+  return grad;
+}
+
 float shape_butterfly(vec2 p) {
   float angle = atan(p.y, p.x);
-  float shape = pow(e, sin(angle)) - 2.0 * cos(4.0 * angle);
-  return shape;
+  float radius = length(p);
+  float curve = pow(e, sin(angle)) - 2.0 * cos(4.0 * angle);
+  return radius - curve;
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
@@ -27,12 +41,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
   vec3 bg_color = vec3(0.0, 0.0, 0.0);
 
-  float radius = length(p);
   float shape = shape_butterfly(p);
 
   vec2 uv = fragCoord.xy / iResolution.xy;
-  vec3 shape_color = vec3(uv, 0.5 + 0.5 * sin(iGlobalTime));
-  vec3 color = mix(bg_color, shape_color, smoothstep(-0.01, 0.01, shape - radius));
+  vec3 color = draw_distance(shape, p);
 
   fragColor = vec4(color, 1.0);
 }
