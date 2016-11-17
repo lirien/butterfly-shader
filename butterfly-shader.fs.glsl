@@ -13,6 +13,13 @@ uniform float     iSampleRate;           // sound sample rate (i.e., 44100)
 #define pi 3.141593
 #define e 2.71828
 
+vec3 blackwhite_fade(vec2 p) {
+    vec3 bw = vec3(0.5 * sin(iGlobalTime) + 0.5 * sin(p.x + p.y),
+                   0.5 * sin(iGlobalTime) + 0.5 * sin(p.x + p.y),
+                   0.5 * sin(iGlobalTime) + 0.5 * sin(p.x + p.y));
+    return bw;
+}
+
 // from hughsk "2D SDF Toy" https://www.shadertoy.com/view/XsyGRW
 float draw_solid(float d) {
   return smoothstep(0.0, 3.0 / iResolution.y, max(0.0, d));
@@ -24,6 +31,7 @@ vec3 draw_distance(float d, vec2 p) {
                   vec3(222.0, 242.0, 242.0) / 255.0,
                   t);
   grad -= mix(vec3(8.0, 87.0, 18.0) / 255.0, vec3(0.0), draw_solid(d));
+  grad -= mix(blackwhite_fade(p), vec3(0.0), draw_solid(d));
 
   return grad;
 }
