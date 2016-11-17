@@ -20,10 +20,10 @@ float draw_solid(float d) {
 
 vec3 draw_distance(float d, vec2 p) {
   float t = clamp(d * 0.85, 0.0, 1.0);
-  vec3 grad = mix(vec3(248.0, 214.0, 227.0) / 255.0,
-                  vec3(253.0, 252.0, 221.0) / 255.0,
+  vec3 grad = mix(vec3(253.0, 252.0, 221.0) / 255.0,
+                  vec3(222.0, 242.0, 242.0) / 255.0,
                   t);
-  grad -= mix(vec3(38.0, 89.0, 89.0) / 255.0, vec3(0.0), draw_solid(d));
+  grad -= mix(vec3(8.0, 87.0, 18.0) / 255.0, vec3(0.0), draw_solid(d));
 
   return grad;
 }
